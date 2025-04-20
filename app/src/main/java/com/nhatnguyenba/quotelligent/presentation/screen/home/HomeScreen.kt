@@ -4,12 +4,19 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,10 +30,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.nhatnguyenba.quotelligent.R
 import com.nhatnguyenba.quotelligent.presentation.component.AutoResizeText
 
 @Composable
@@ -84,17 +93,37 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 )
             }
 
-//            // Loading overlay
-//            if (quoteData.isLoading) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .background(Color.Black.copy(alpha = 0.3f)),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    CircularProgressIndicator(color = Color.White)
-//                }
-//            }
+            // Action Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .align(Alignment.BottomCenter),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconButton(onClick = { }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Favorite,
+                        contentDescription = "Favorite",
+                        tint = Color.White
+                    )
+                }
+
+                IconButton(onClick = {
+                    // share quote to social media
+
+                }) {
+                    Icon(Icons.Default.Share, "Share", tint = Color.White)
+                }
+
+                IconButton(onClick = { }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_bookmark),
+                        "Save",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }
