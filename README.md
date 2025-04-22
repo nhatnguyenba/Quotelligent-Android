@@ -8,6 +8,7 @@
 
 <div align="center">
   <img src="screenshots/quotelligent_home_screen.gif" width="30%" alt="App Preview">
+  <img src="screenshots/quotelligent_search_screen.gif" width="30%" alt="App Preview">
 </div>
 
 ## 🌟 Tính năng nổi bật
