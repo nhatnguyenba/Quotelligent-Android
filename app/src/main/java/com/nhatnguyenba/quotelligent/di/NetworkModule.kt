@@ -17,7 +17,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val PEXELS_API_KEY = "ma516sPtoPIyAjWXUeDCAPQQsG4XBNFYQQfWdntZnmEFRwgxlstwA2SS"
-    private const val FAVQS_API_KEY = "319fa0de99dbf6677db87a7614a400e0"
+    private const val FAVQS_API_KEY = "Token token=319fa0de99dbf6677db87a7614a400e0"
 
     @Provides
     @Singleton

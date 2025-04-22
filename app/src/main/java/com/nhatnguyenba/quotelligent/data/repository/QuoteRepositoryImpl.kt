@@ -20,7 +20,7 @@ class QuoteRepositoryImpl @Inject constructor(
             IOException("Failed to get quote").printStackTrace()
             return Quote()
         }
-        Log.d("NHAT", "Body: " + response.body())
+        Log.d("NHAT", "getRandomQuote: " + response.body())
         return response.body().toDomain()
     }
 
@@ -39,5 +39,17 @@ class QuoteRepositoryImpl @Inject constructor(
         val photos = response.body()?.photos
         if (photos.isNullOrEmpty()) return ""
         return photos.first().src.large2x
+    }
+
+    override suspend fun searchQuote(keyword: String): List<Quote> {
+        val response = quoteApi.searchQuotes(keyword)
+        if (!response.isSuccessful) {
+            IOException("Failed to get quote").printStackTrace()
+            return listOf()
+        }
+        Log.d("NHAT", "searchQuote: " + response.body())
+        return response.body()?.quotes?.map {
+            it.toDomain()
+        } ?: listOf()
     }
 }

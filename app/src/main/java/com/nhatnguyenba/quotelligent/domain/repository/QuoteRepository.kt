@@ -5,4 +5,5 @@ import com.nhatnguyenba.quotelligent.domain.model.Quote
 interface QuoteRepository {
     suspend fun getRandomQuote(): Quote
     suspend fun getBackgroundImage(tags: List<String>): String
+    suspend fun searchQuote(keyword: String): List<Quote>
 }

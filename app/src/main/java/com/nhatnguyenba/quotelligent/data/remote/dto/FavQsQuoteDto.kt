@@ -5,10 +5,17 @@ import com.google.gson.annotations.SerializedName
 data class FavQsQuoteDto(
     @SerializedName("qotd_date")
     val qotdDate: String,
-    val quote: Quote,
+    val quote: QuoteDto,
 )
 
-data class Quote(
+data class SearchQuoteDto(
+    val page: Long,
+    @SerializedName("last_page")
+    val lastPage: Boolean,
+    val quotes: List<QuoteDto>,
+)
+
+data class QuoteDto(
     val id: Long,
     val dialogue: Boolean,
     val private: Boolean,
