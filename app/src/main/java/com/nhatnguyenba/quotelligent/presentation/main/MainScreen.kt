@@ -1,11 +1,14 @@
 package com.nhatnguyenba.quotelligent.presentation.main
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.nhatnguyenba.quotelligent.ads.QuotelligentBannerAd
 import com.nhatnguyenba.quotelligent.presentation.navigation.BottomNavigationBar
 import com.nhatnguyenba.quotelligent.presentation.navigation.Screen
 import com.nhatnguyenba.quotelligent.presentation.screen.collection.CollectionScreen
@@ -29,12 +32,16 @@ fun MainScreen() {
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = androidx.compose.ui.Modifier.padding(padding)
+            modifier = Modifier.padding(padding)
         ) {
             composable(Screen.Home.route) { HomeScreen() }
             composable(Screen.Search.route) { SearchScreen() }
             composable(Screen.Collection.route) { CollectionScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
         }
+
+        QuotelligentBannerAd(
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

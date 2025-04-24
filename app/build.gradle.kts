@@ -55,6 +55,7 @@ dependencies {
 
     // DI
     implementation(libs.hilt.android)
+    implementation(project(":ads-android-library"))
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 

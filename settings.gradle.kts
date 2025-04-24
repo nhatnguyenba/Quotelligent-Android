@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Quotelligent"
 include(":app")
+include(":ads-android-library")

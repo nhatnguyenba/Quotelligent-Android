@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.nhatnguyenba.quotelligent.R
+import com.nhatnguyenba.quotelligent.ads.QuotelligentBannerAd
 import com.nhatnguyenba.quotelligent.presentation.component.AutoResizeText
 
 @Composable
