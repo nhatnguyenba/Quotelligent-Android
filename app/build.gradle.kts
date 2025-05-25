@@ -5,6 +5,7 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android") version "2.48.1"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -61,6 +62,17 @@ dependencies {
 
     // Image Loading
     implementation (libs.coil.kt.coil.compose)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
+    implementation("com.google.firebase:firebase-config-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Mosi
+    implementation("com.squareup.moshi:moshi:1.15.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     //
     implementation(libs.androidx.core.ktx)

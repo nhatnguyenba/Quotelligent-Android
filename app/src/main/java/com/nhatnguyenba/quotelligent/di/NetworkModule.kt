@@ -1,5 +1,7 @@
 package com.nhatnguyenba.quotelligent.di
 
+import android.util.Log
+import com.nhatnguyenba.quotelligent.config.RemoteConfigManager
 import com.nhatnguyenba.quotelligent.data.remote.api.FavQsQuoteApiService
 import com.nhatnguyenba.quotelligent.data.remote.api.PexelsApiService
 import dagger.Module
@@ -16,48 +18,63 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val PEXELS_API_KEY = "ma516sPtoPIyAjWXUeDCAPQQsG4XBNFYQQfWdntZnmEFRwgxlstwA2SS"
-    private const val FAVQS_API_KEY = "Token token=319fa0de99dbf6677db87a7614a400e0"
-
     @Provides
     @Singleton
-    fun provideQuoteApi(): FavQsQuoteApiService = Retrofit.Builder()
-        .baseUrl("https://favqs.com/api/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                })
-                .addInterceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .addHeader("Authorization", FAVQS_API_KEY)
+    fun provideQuoteApi(
+        remoteConfigManager: RemoteConfigManager
+    ): FavQsQuoteApiService {
+        val baseUrl = remoteConfigManager.getFavqsBaseUrl()
+        val apiKey = remoteConfigManager.getFavqsApiKey()
+
+        Log.d("NetworkModule", "baseUrl: $baseUrl, apiKey: $apiKey")
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    })
+                    .addInterceptor { chain ->
+                        val request = chain.request().newBuilder()
+                            .addHeader("Authorization", apiKey)
+                            .build()
+                        chain.proceed(request)
+                    }
                     .build()
-                chain.proceed(request)
-            }
-                .build()
-        )
-        .build()
-        .create(FavQsQuoteApiService::class.java)
+            )
+            .build()
+            .create(FavQsQuoteApiService::class.java)
+    }
 
     @Provides
     @Singleton
-    fun providePexelsApi(): PexelsApiService = Retrofit.Builder()
-        .baseUrl("https://api.pexels.com/v1/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                })
-                .addInterceptor { chain ->
-                    val request = chain.request().newBuilder()
-                        .addHeader("Authorization", PEXELS_API_KEY)
-                        .build()
-                    chain.proceed(request)
-                }
-                .build()
-        )
-        .build()
-        .create(PexelsApiService::class.java)
+    fun providePexelsApi(
+        remoteConfigManager: RemoteConfigManager
+    ): PexelsApiService {
+        val baseUrl = remoteConfigManager.getPexelsBaseUrl()
+        val apiKey = remoteConfigManager.getPexelsApiKey()
+
+        Log.d("NetworkModule2", "baseUrl: $baseUrl, apiKey: $apiKey")
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    })
+                    .addInterceptor { chain ->
+                        val request = chain.request().newBuilder()
+                            .addHeader("Authorization", apiKey)
+                            .build()
+                        chain.proceed(request)
+                    }
+                    .build()
+            )
+            .build()
+            .create(PexelsApiService::class.java)
+    }
 }

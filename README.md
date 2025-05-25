@@ -29,6 +29,7 @@
 - **Coil** - Tải và cache hình ảnh
 - **Firebase** - Analytics, Crash Reporting
 - **Kotlin Coroutines & Flow** - Xử lý bất đồng bộ
+- **Firebase Remote Config** - Lưu API keys
 
 ## 🚀 Cài đặt
 1. Clone repo:
