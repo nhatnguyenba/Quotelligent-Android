@@ -47,7 +47,12 @@ android {
     }
 }
 
+tasks.register("testClasses") {
+
+}
+
 dependencies {
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
 
     // Networking
     implementation (libs.retrofit)
@@ -57,6 +62,8 @@ dependencies {
     // DI
     implementation(libs.hilt.android)
     implementation(project(":ads-android-library"))
+    implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.appcompat)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -83,6 +90,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation ("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

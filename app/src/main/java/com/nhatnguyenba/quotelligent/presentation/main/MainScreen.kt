@@ -40,8 +40,8 @@ fun MainScreen() {
             composable(Screen.Profile.route) { ProfileScreen() }
         }
 
-        QuotelligentBannerAd(
-            modifier = Modifier.fillMaxSize()
-        )
+//        QuotelligentBannerAd(
+//            modifier = Modifier.fillMaxSize()
+//        )
     }
 }
