@@ -135,15 +135,15 @@ private fun AuthorItem(author: Author, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            AsyncImage(
-                model = author.imageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape),
-                placeholder = painterResource(R.drawable.ic_face),
-                error = painterResource(R.drawable.ic_face)
-            )
+//            AsyncImage(
+//                model = author.imageUrl,
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(48.dp)
+//                    .clip(CircleShape),
+//                placeholder = painterResource(R.drawable.ic_face),
+//                error = painterResource(R.drawable.ic_face)
+//            )
 
             Column {
                 Text(
