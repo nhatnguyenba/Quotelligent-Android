@@ -1,5 +1,6 @@
 package com.nhatnguyenba.quotelligent.presentation.screen.home
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -27,8 +28,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -51,12 +56,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.nhatnguyenba.quotelligent.R
 import com.nhatnguyenba.quotelligent.presentation.component.AutoResizeText
+import com.nhatnguyenba.quotelligent.presentation.component.CollectionSelectionDialog
+import com.nhatnguyenba.quotelligent.presentation.viewmodel.QuoteViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    quoteViewModel: QuoteViewModel = hiltViewModel()
+) {
     val maxPageCount = Short.MAX_VALUE.toInt()
     val pagerState = rememberPagerState(
         initialPage = maxPageCount / 2,
@@ -79,6 +90,14 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         val quoteData = viewModel.cachedPages[actualPage]
 
         val picture = remember { Picture() }
+
+        var showCollectionDialog by remember { mutableStateOf(false) }
+        val isFavorite by quoteViewModel.isFavorite.collectAsState()
+
+        LaunchedEffect(quoteData) {
+            quoteViewModel.updateFavoriteStatus(quoteData.quote)
+        }
+
         Column(
             modifier = Modifier
                 .padding(0.dp)
@@ -149,11 +168,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         .align(Alignment.BottomCenter),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        quoteViewModel.toggleFavorite(quoteData.quote)
+                    }) {
                         Icon(
                             imageVector = Icons.Outlined.Favorite,
                             contentDescription = "Favorite",
-                            tint = Color.White
+                            tint = if (isFavorite) Color.Red else Color.White
                         )
                     }
 
@@ -167,13 +188,48 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         Icon(Icons.Default.Share, "Share", tint = Color.White)
                     }
 
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        showCollectionDialog = true
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_bookmark),
                             "Save",
                             tint = Color.White
                         )
                     }
+                }
+
+                if (showCollectionDialog) {
+                    CollectionSelectionDialog(
+                        collections = quoteViewModel.collections.collectAsState().value,
+                        onSelectCollection = { collectionId ->
+                            try {
+                                quoteViewModel.addToCollection(quoteData.quote, collectionId)
+                                showCollectionDialog = false
+                                Toast.makeText(context, "Added to collection", Toast.LENGTH_SHORT)
+                                    .show()
+                            } catch (e: Exception) {
+                                showCollectionDialog = false
+                                Toast.makeText(
+                                    context,
+                                    "This quote has already been added to this collection",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+                        onCreateCollection = { name ->
+                            quoteViewModel.createCollection(name) { collectionId ->
+                                quoteViewModel.addToCollection(quoteData.quote, collectionId)
+                                showCollectionDialog = false
+                                Toast.makeText(
+                                    context,
+                                    "Created and added to collection",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+                        onDismiss = { showCollectionDialog = false }
+                    )
                 }
             }
         }
