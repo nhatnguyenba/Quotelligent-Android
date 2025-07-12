@@ -6,7 +6,6 @@ import com.nhatnguyenba.quotelligent.data.repository.QuoteCollectionRepository
 import com.nhatnguyenba.quotelligent.domain.model.Quote
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import kotlin.text.Typography.quote
 
 class CreateCollectionUseCase @Inject constructor(private val repository: QuoteCollectionRepository) {
     suspend operator fun invoke(name: String): Int {

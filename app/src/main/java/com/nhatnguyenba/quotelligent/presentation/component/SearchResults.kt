@@ -34,11 +34,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.nhatnguyenba.quotelligent.R
 import com.nhatnguyenba.quotelligent.domain.model.Author
 import com.nhatnguyenba.quotelligent.domain.model.Category
 import com.nhatnguyenba.quotelligent.domain.model.Quote
+import com.nhatnguyenba.quotelligent.presentation.navigation.Screen
 import kotlin.math.abs
 
 @Composable
@@ -46,20 +48,22 @@ fun SearchResults(
     results: List<Any>,
     type: SearchFilter,
     isLoading: Boolean,
-    error: String?
+    error: String?,
+    navController: NavController
 ) {
     when {
         isLoading -> LoadingIndicator()
         error != null -> ErrorMessage(error)
         results.isEmpty() -> EmptyResults()
-        else -> ResultsList(results, type)
+        else -> ResultsList(results, type, navController)
     }
 }
 
 @Composable
 private fun ResultsList(
     results: List<Any>, // Có thể là List<Quote>, List<Author> hoặc List<Category>
-    type: SearchFilter
+    type: SearchFilter,
+    navController: NavController
 ) {
     val gridCells = if (type == SearchFilter.QUOTES) {
         GridCells.Fixed(1)
@@ -75,14 +79,23 @@ private fun ResultsList(
     ) {
         items(results.size) { index ->
             when (type) {
-                SearchFilter.QUOTES -> QuoteItem(quote = results[index] as Quote, onClick = {})
+                SearchFilter.QUOTES -> QuoteItem(quote = results[index] as Quote, onClick = {
+                    val quote = results[index] as Quote
+                    navController.navigate("${Screen.QuoteDetail.route}/${quote.id}")
+                })
                 SearchFilter.AUTHORS -> AuthorItem(
                     author = results[index] as Author,
-                    onClick = {})
+                    onClick = {
+                        val author = results[index] as Author
+                        navController.navigate("${Screen.AuthorDetail.route}/${author.name}")
+                    })
 
                 SearchFilter.CATEGORIES -> CategoryItem(
                     category = results[index] as Category,
-                    onClick = {})
+                    onClick = {
+                        val category = results[index] as Category
+                        navController.navigate("${Screen.CategoryDetail.route}/${category.name}")
+                    })
 
                 SearchFilter.BOOKMARKS -> {}
             }
@@ -95,7 +108,7 @@ fun QuoteItem(quote: Quote, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle click */ },
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
@@ -124,7 +137,7 @@ private fun AuthorItem(author: Author, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1.5f)
-            .clickable { /* Xử lý click */ },
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -179,7 +192,7 @@ private fun CategoryItem(category: Category, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clickable { },
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(

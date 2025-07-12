@@ -24,10 +24,12 @@ fun BottomNavigationBar(
         screens.forEach { screen ->
             NavigationBarItem(
                 icon = {
-                    Icon(
-                        painter = painterResource(id = screen.iconRes),
-                        contentDescription = screen.title
-                    )
+                    screen.iconRes?.let { painterResource(id = it) }?.let {
+                        Icon(
+                            painter = it,
+                            contentDescription = screen.title
+                        )
+                    }
                 },
                 label = { Text(screen.title) },
                 selected = currentDestination?.hierarchy?.any {

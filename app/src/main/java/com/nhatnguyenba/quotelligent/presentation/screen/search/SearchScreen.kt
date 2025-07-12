@@ -10,12 +10,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.nhatnguyenba.quotelligent.presentation.component.FilterChips
 import com.nhatnguyenba.quotelligent.presentation.component.SearchBar
 import com.nhatnguyenba.quotelligent.presentation.component.SearchResults
 
 @Composable
-fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(
+    viewModel: SearchViewModel = hiltViewModel(),
+    navController: NavController
+) {
     val state by viewModel.state
 
     Column(
@@ -41,7 +45,8 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
             results = state.results,
             type = state.selectedFilter,
             isLoading = state.isLoading,
-            error = state.error
+            error = state.error,
+            navController = navController
         )
     }
 }

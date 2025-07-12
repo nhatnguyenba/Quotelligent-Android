@@ -6,6 +6,7 @@ import com.nhatnguyenba.quotelligent.data.remote.api.PexelsApiService
 import com.nhatnguyenba.quotelligent.data.remote.mapper.toDomain
 import com.nhatnguyenba.quotelligent.domain.model.Quote
 import com.nhatnguyenba.quotelligent.domain.repository.QuoteRepository
+import kotlinx.coroutines.flow.Flow
 import java.io.IOException
 import javax.inject.Inject
 
@@ -43,6 +44,40 @@ class QuoteRepositoryImpl @Inject constructor(
 
     override suspend fun searchQuote(keyword: String): List<Quote> {
         val response = quoteApi.searchQuotes(keyword)
+        if (!response.isSuccessful) {
+            IOException("Failed to get quote").printStackTrace()
+            return listOf()
+        }
+        Log.d("NHAT", "searchQuote: " + response.body())
+        return response.body()?.quotes?.map {
+            it.toDomain()
+        } ?: listOf()
+    }
+
+    override suspend fun getQuoteById(quoteId: String): Quote? {
+        val response = quoteApi.getQuoteById(quoteId)
+        if (!response.isSuccessful) {
+            IOException("Failed to get quote").printStackTrace()
+            return null
+        }
+        Log.d("NHAT", "searchQuote: " + response.body())
+        return response.body()?.toDomain()
+    }
+
+    override suspend fun getQuotesByAuthor(authorId: String): List<Quote> {
+        val response = quoteApi.getQuotesByAuthor(authorId)
+        if (!response.isSuccessful) {
+            IOException("Failed to get quote").printStackTrace()
+            return listOf()
+        }
+        Log.d("NHAT", "searchQuote: " + response.body())
+        return response.body()?.quotes?.map {
+            it.toDomain()
+        } ?: listOf()
+    }
+
+    override suspend fun getQuotesByCategory(categoryId: String): List<Quote> {
+        val response = quoteApi.getQuotesByCategory(categoryId)
         if (!response.isSuccessful) {
             IOException("Failed to get quote").printStackTrace()
             return listOf()

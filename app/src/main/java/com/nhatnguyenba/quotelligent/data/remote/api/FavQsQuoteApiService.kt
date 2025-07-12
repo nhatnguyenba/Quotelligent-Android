@@ -2,9 +2,11 @@ package com.nhatnguyenba.quotelligent.data.remote.api
 
 import com.nhatnguyenba.quotelligent.data.remote.dto.FavQsQuoteDto
 import com.nhatnguyenba.quotelligent.data.remote.dto.FiltersResponse
+import com.nhatnguyenba.quotelligent.data.remote.dto.QuoteDto
 import com.nhatnguyenba.quotelligent.data.remote.dto.SearchQuoteDto
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface FavQsQuoteApiService {
@@ -18,4 +20,20 @@ interface FavQsQuoteApiService {
 
     @GET("typeahead")
     suspend fun getFilters(): Response<FiltersResponse>
+
+    @GET("quotes/{quoteId}")
+    suspend fun getQuoteById(@Path("quoteId") quoteId: String): Response<QuoteDto>
+
+    @GET("quotes/")
+    suspend fun getQuotesByAuthor(
+        @Query("filter") authorName: String,
+        @Query("type") type: String = "author"
+    ): Response<SearchQuoteDto>
+
+    @GET("quotes/")
+    suspend fun getQuotesByCategory(
+        @Query("filter") categoryName: String,
+        @Query("type") type: String = "tag"
+    ): Response<SearchQuoteDto>
+
 }
