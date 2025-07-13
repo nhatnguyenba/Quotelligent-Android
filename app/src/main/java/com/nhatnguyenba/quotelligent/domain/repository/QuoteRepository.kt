@@ -9,4 +9,5 @@ interface QuoteRepository {
     suspend fun getQuoteById(quoteId: String): Quote?
     suspend fun getQuotesByAuthor(authorId: String): List<Quote>
     suspend fun getQuotesByCategory(categoryId: String): List<Quote>
+    suspend fun isQuoteSaved(quote: Quote): Boolean
 }

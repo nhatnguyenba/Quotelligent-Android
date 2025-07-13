@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +17,7 @@ import com.nhatnguyenba.quotelligent.presentation.screen.detail.AuthorDetailScre
 import com.nhatnguyenba.quotelligent.presentation.screen.detail.CategoryDetailScreen
 import com.nhatnguyenba.quotelligent.presentation.screen.detail.QuoteDetailScreen
 import com.nhatnguyenba.quotelligent.presentation.screen.home.HomeScreen
+import com.nhatnguyenba.quotelligent.presentation.screen.home.HomeViewModel
 import com.nhatnguyenba.quotelligent.presentation.screen.profile.ProfileScreen
 import com.nhatnguyenba.quotelligent.presentation.screen.search.SearchScreen
 
@@ -37,7 +39,10 @@ fun MainScreen() {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(padding)
         ) {
-            composable(Screen.Home.route) { HomeScreen() }
+            composable(Screen.Home.route) {
+                val viewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(quoteList = viewModel.cachedPages)
+            }
             composable(Screen.Search.route) { SearchScreen(navController = navController) }
             composable(Screen.Collection.route) { CollectionScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }

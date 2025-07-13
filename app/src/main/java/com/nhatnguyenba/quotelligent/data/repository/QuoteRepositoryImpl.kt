@@ -1,18 +1,19 @@
 package com.nhatnguyenba.quotelligent.data.repository
 
 import android.util.Log
+import com.nhatnguyenba.quotelligent.data.local.dao.QuoteCollectionCrossRefDao
 import com.nhatnguyenba.quotelligent.data.remote.api.FavQsQuoteApiService
 import com.nhatnguyenba.quotelligent.data.remote.api.PexelsApiService
 import com.nhatnguyenba.quotelligent.data.remote.mapper.toDomain
 import com.nhatnguyenba.quotelligent.domain.model.Quote
 import com.nhatnguyenba.quotelligent.domain.repository.QuoteRepository
-import kotlinx.coroutines.flow.Flow
 import java.io.IOException
 import javax.inject.Inject
 
 class QuoteRepositoryImpl @Inject constructor(
     private val quoteApi: FavQsQuoteApiService,
     private val pexelsApi: PexelsApiService,
+    private val crossRefDao: QuoteCollectionCrossRefDao
 ) : QuoteRepository {
 
     override suspend fun getRandomQuote(): Quote {
@@ -61,7 +62,7 @@ class QuoteRepositoryImpl @Inject constructor(
             return null
         }
         Log.d("NHAT", "searchQuote: " + response.body())
-        return response.body()?.toDomain()
+        return response.body().toDomain()
     }
 
     override suspend fun getQuotesByAuthor(authorId: String): List<Quote> {
@@ -86,5 +87,10 @@ class QuoteRepositoryImpl @Inject constructor(
         return response.body()?.quotes?.map {
             it.toDomain()
         } ?: listOf()
+    }
+
+    override suspend fun isQuoteSaved(quote: Quote): Boolean {
+        // Kiểm tra xem quote đã được lưu trong bất kỳ collection nào
+        return crossRefDao.getCollectionsForQuote(quote.id).isNotEmpty()
     }
 }

@@ -1,5 +1,6 @@
 package com.nhatnguyenba.quotelligent.di
 
+import com.nhatnguyenba.quotelligent.data.local.dao.QuoteCollectionCrossRefDao
 import com.nhatnguyenba.quotelligent.data.remote.api.FavQsQuoteApiService
 import com.nhatnguyenba.quotelligent.data.remote.api.PexelsApiService
 import com.nhatnguyenba.quotelligent.data.repository.AuthorRepositoryImpl
@@ -21,8 +22,9 @@ object RepositoryModule {
     @Singleton
     fun provideQuoteRepository(
         quoteApi: FavQsQuoteApiService,
-        pexelsApi: PexelsApiService
-    ): QuoteRepository = QuoteRepositoryImpl(quoteApi, pexelsApi)
+        pexelsApi: PexelsApiService,
+        crossRefDao: QuoteCollectionCrossRefDao
+    ): QuoteRepository = QuoteRepositoryImpl(quoteApi, pexelsApi, crossRefDao)
 
     @Provides
     @Singleton

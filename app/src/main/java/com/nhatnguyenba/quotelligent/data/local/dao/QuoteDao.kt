@@ -47,4 +47,7 @@ interface QuoteCollectionCrossRefDao {
 
     @Query("DELETE FROM quote_collection_cross_ref WHERE quoteId = :quoteId AND collectionId = :collectionId")
     suspend fun removeFromCollection(quoteId: String, collectionId: Int)
+
+    @Query("SELECT collectionId FROM quote_collection_cross_ref WHERE quoteId = :quoteId")
+    suspend fun getCollectionsForQuote(quoteId: String): List<Int>
 }

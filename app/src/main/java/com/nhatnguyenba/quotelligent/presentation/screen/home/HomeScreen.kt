@@ -1,12 +1,10 @@
 package com.nhatnguyenba.quotelligent.presentation.screen.home
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Picture
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,25 +49,20 @@ import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.nhatnguyenba.quotelligent.R
 import com.nhatnguyenba.quotelligent.presentation.component.AutoResizeText
 import com.nhatnguyenba.quotelligent.presentation.component.CollectionSelectionDialog
-import com.nhatnguyenba.quotelligent.presentation.viewmodel.QuoteViewModel
-import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
+import com.nhatnguyenba.quotelligent.presentation.screen.detail.QuoteDetailViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    quoteViewModel: QuoteViewModel = hiltViewModel()
+    quoteDetailViewModel: QuoteDetailViewModel = hiltViewModel(),
+    quoteList: List<QuotePageData>,
 ) {
     val maxPageCount = Short.MAX_VALUE.toInt()
     val pagerState = rememberPagerState(
@@ -86,151 +82,150 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
     ) { page ->
         Log.d("NHAT", "Page: $page")
-        val actualPage = page % viewModel.cachedPages.size
-        val quoteData = viewModel.cachedPages[actualPage]
+        val actualPage = page % quoteList.size
+        val quoteData = quoteList[actualPage]
+        val quote = quoteData.quote
+        val quoteId = quote.id
 
         val picture = remember { Picture() }
 
         var showCollectionDialog by remember { mutableStateOf(false) }
-        val isFavorite by quoteViewModel.isFavorite.collectAsState()
+        var isFavorite by remember { mutableStateOf(false) }
+        var isSaved by remember { mutableStateOf(false) }
 
-        LaunchedEffect(quoteData) {
-            quoteViewModel.updateFavoriteStatus(quoteData.quote)
+        // Load quote and check favorite/saved status
+        LaunchedEffect(quoteId) {
+            quoteDetailViewModel.loadQuote(quoteId)
+            quote.let {
+                isFavorite = quoteDetailViewModel.isQuoteFavorite(it)
+                isSaved = quoteDetailViewModel.isQuoteSaved(it)
+            }
         }
 
-        Column(
-            modifier = Modifier
-                .padding(0.dp)
-                .fillMaxSize()
-                .drawWithCache {
-                    // Example that shows how to redirect rendering to an Android Picture and then
-                    // draw the picture into the original destination
-                    val width = this.size.width.toInt()
-                    val height = this.size.height.toInt()
-                    onDrawWithContent {
-                        val pictureCanvas =
-                            androidx.compose.ui.graphics.Canvas(
-                                picture.beginRecording(
-                                    width,
-                                    height
-                                )
-                            )
-                        draw(this, this.layoutDirection, pictureCanvas, this.size) {
-                            this@onDrawWithContent.drawContent()
-                        }
-                        picture.endRecording()
+        // Update states when quote changes
+        LaunchedEffect(quote) {
+            quote.let {
+                isFavorite = quoteDetailViewModel.isQuoteFavorite(it)
+                isSaved = quoteDetailViewModel.isQuoteSaved(it)
+            }
+        }
 
-                        drawIntoCanvas { canvas -> canvas.nativeCanvas.drawPicture(picture) }
-                    }
-                }
-        ) {
-            // Screen Content To Capture
-            Box(modifier = Modifier.fillMaxSize()) {
-                AsyncImage(
-                    model = quoteData.backgroundUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    error = randomGradientPainter(),
-                    placeholder = randomGradientPainter(),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.9f)
+        // Screen Content To Capture
+        Box(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = quoteData.backgroundUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                error = randomGradientPainter(),
+                placeholder = randomGradientPainter(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.9f)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AutoResizeText(
+                    text = quote.content ?: "Unknown",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
                 )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    AutoResizeText(
-                        text = quoteData.quote.content ?: "Unknown",
-                        style = MaterialTheme.typography.displayMedium,
-                        color = Color.White,
-                        textAlign = TextAlign.Center
-                    )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                AutoResizeText(
+                    text = "- ${quote.author ?: "Unknown"} -",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+            }
 
-                    AutoResizeText(
-                        text = "- ${quoteData.quote.author ?: "Unknown"} -",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color.White.copy(alpha = 0.8f)
+            // Action Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+                    .align(Alignment.BottomCenter),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconButton(onClick = {
+                    quoteDetailViewModel.toggleFavorite(quote)
+                    isFavorite = !isFavorite
+                }) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) Color.Red else Color.White
                     )
                 }
 
-                // Action Buttons
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp)
-                        .align(Alignment.BottomCenter),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    IconButton(onClick = {
-                        quoteViewModel.toggleFavorite(quoteData.quote)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Favorite,
-                            contentDescription = "Favorite",
-                            tint = if (isFavorite) Color.Red else Color.White
-                        )
-                    }
-
-                    IconButton(onClick = {
-                        // share quote to social media
-                        coroutineScope.launch {
-                            val bitmap = createBitmapFromPicture(picture)
-                            shareQuoteImage(context, bitmap, quoteData)
+                IconButton(onClick = {
+                    // share quote to social media
+                    quote.let {
+                        val shareText = "\"${it.content}\"\n\n- ${it.author} -"
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
                         }
-                    }) {
-                        Icon(Icons.Default.Share, "Share", tint = Color.White)
-                    }
-
-                    IconButton(onClick = {
-                        showCollectionDialog = true
-                    }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_bookmark),
-                            "Save",
-                            tint = Color.White
+                        context.startActivity(
+                            Intent.createChooser(
+                                shareIntent,
+                                "Share Quote"
+                            )
                         )
                     }
-                }
-
-                if (showCollectionDialog) {
-                    CollectionSelectionDialog(
-                        collections = quoteViewModel.collections.collectAsState().value,
-                        onSelectCollection = { collectionId ->
-                            try {
-                                quoteViewModel.addToCollection(quoteData.quote, collectionId)
-                                showCollectionDialog = false
-                                Toast.makeText(context, "Added to collection", Toast.LENGTH_SHORT)
-                                    .show()
-                            } catch (e: Exception) {
-                                showCollectionDialog = false
-                                Toast.makeText(
-                                    context,
-                                    "This quote has already been added to this collection",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        onCreateCollection = { name ->
-                            quoteViewModel.createCollection(name) { collectionId ->
-                                quoteViewModel.addToCollection(quoteData.quote, collectionId)
-                                showCollectionDialog = false
-                                Toast.makeText(
-                                    context,
-                                    "Created and added to collection",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        },
-                        onDismiss = { showCollectionDialog = false }
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Share,
+                        contentDescription = "Share",
+                        tint = Color.White
                     )
                 }
+
+                IconButton(onClick = {
+                    showCollectionDialog = true
+                }) {
+                    Icon(
+                        imageVector = if (isSaved) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
+                        contentDescription = "Save to Collection",
+                        tint = if (isSaved) Color.Blue else Color.White
+                    )
+                }
+            }
+
+            if (showCollectionDialog) {
+                CollectionSelectionDialog(
+                    collections = quoteDetailViewModel.collections.collectAsState().value,
+                    onSelectCollection = { collectionId ->
+                        quoteDetailViewModel.addToCollection(quote, collectionId)
+                        isSaved = true
+                        showCollectionDialog = false
+                        Toast.makeText(context, "Added to collection", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                    onCreateCollection = { name ->
+                        quoteDetailViewModel.createCollection(name) { collectionId ->
+                            quoteDetailViewModel.addToCollection(
+                                quote,
+                                collectionId
+                            )
+                            isSaved = true
+                            showCollectionDialog = false
+                            Toast.makeText(
+                                context,
+                                "Created and added to collection",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    onDismiss = { showCollectionDialog = false }
+                )
             }
         }
     }
@@ -248,42 +243,6 @@ private fun createBitmapFromPicture(picture: Picture): Bitmap {
     canvas.drawColor(android.graphics.Color.WHITE)
     canvas.drawBitmap(targetBmp, 0f, 0f, Paint())
     return targetBmp
-}
-
-fun shareQuoteImage(context: Context, bitmap: Bitmap, quoteData: QuotePageData) {
-    try {
-        // Save bitmap to cache
-        val cachePath = File(context.cacheDir, "images")
-        cachePath.mkdirs()
-        val file = File(cachePath, "quote_${System.currentTimeMillis()}.png")
-        FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-        }
-
-        // Get content URI using FileProvider
-        val contentUri: Uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
-
-        // Create share intent
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "image/png"
-            putExtra(Intent.EXTRA_STREAM, contentUri)
-            putExtra(
-                Intent.EXTRA_TEXT,
-                "${quoteData.quote.content}\n\n- ${quoteData.quote.author} -"
-            )
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-
-        // Start share activity
-        context.startActivity(Intent.createChooser(shareIntent, "Share Quote"))
-    } catch (e: Exception) {
-        e.printStackTrace()
-        Toast.makeText(context, "Error sharing quote", Toast.LENGTH_SHORT).show()
-    }
 }
 
 // Định nghĩa 2 danh sách màu sáng và tối

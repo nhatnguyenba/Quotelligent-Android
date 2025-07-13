@@ -2,7 +2,6 @@ package com.nhatnguyenba.quotelligent.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nhatnguyenba.quotelligent.data.local.entities.CollectionEntity
 import com.nhatnguyenba.quotelligent.data.local.entities.QuoteEntity
 import com.nhatnguyenba.quotelligent.domain.model.Quote
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.text.Typography.quote
 
 @HiltViewModel
 class QuoteViewModel @Inject constructor(
@@ -50,19 +48,19 @@ class QuoteViewModel @Inject constructor(
     val isFavorite: StateFlow<Boolean> = _isFavorite
 
     suspend fun updateFavoriteStatus(quote: Quote) {
-        _isFavorite.value = isQuoteFavoriteUseCase(quote)
+//        _isFavorite.value = isQuoteFavoriteUseCase(quote)
     }
 
-    suspend fun isQuoteFavorite(quote: Quote): Boolean {
-        return isQuoteFavoriteUseCase(quote)
-    }
+//    suspend fun isQuoteFavorite(quote: Quote): Boolean {
+////        return isQuoteFavoriteUseCase(quote)
+//    }
 
-    fun toggleFavorite(quote: Quote) {
-        viewModelScope.launch {
-            toggleFavoriteUseCase(quote)
-            updateFavoriteStatus(quote)
-        }
-    }
+//    fun toggleFavorite(quote: Quote) {
+//        viewModelScope.launch {
+//            toggleFavoriteUseCase(quote)
+//            updateFavoriteStatus(quote)
+//        }
+//    }
 
     fun createCollection(name: String, onSuccess: (Int) -> Unit) {
         viewModelScope.launch {
