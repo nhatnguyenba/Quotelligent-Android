@@ -213,11 +213,11 @@ fun QuoteDetailScreen(
             quote?.let { currentQuote ->
                 CollectionSelectionDialog(
                     collections = viewModel.collections.collectAsState().value,
-                    onSelectCollection = { collectionId ->
-                        viewModel.addToCollection(currentQuote, collectionId)
+                    onSelectCollection = { collection ->
+                        viewModel.addToCollection(currentQuote, collection.id)
                         isSaved = true
                         showCollectionDialog = false
-                        Toast.makeText(context, "Added to collection", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Added to the \'${collection.name}\' collection", Toast.LENGTH_SHORT).show()
                     },
                     onCreateCollection = { name ->
                         viewModel.createCollection(name) { collectionId ->
@@ -226,7 +226,7 @@ fun QuoteDetailScreen(
                             showCollectionDialog = false
                             Toast.makeText(
                                 context,
-                                "Created and added to collection",
+                                "Created and added to the \'${name}\' collection",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

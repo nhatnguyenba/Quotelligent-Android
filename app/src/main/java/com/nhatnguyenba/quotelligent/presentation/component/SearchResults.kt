@@ -54,7 +54,7 @@ fun SearchResults(
     when {
         isLoading -> LoadingIndicator()
         error != null -> ErrorMessage(error)
-        results.isEmpty() -> EmptyResults()
+        results.isEmpty() -> EmptyResults(type = type)
         else -> ResultsList(results, type, navController)
     }
 }

@@ -202,11 +202,11 @@ fun HomeScreen(
             if (showCollectionDialog) {
                 CollectionSelectionDialog(
                     collections = quoteDetailViewModel.collections.collectAsState().value,
-                    onSelectCollection = { collectionId ->
-                        quoteDetailViewModel.addToCollection(quote, collectionId)
+                    onSelectCollection = { collection ->
+                        quoteDetailViewModel.addToCollection(quote, collection.id)
                         isSaved = true
                         showCollectionDialog = false
-                        Toast.makeText(context, "Added to collection", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "Added to the \'${collection.name}\' collection", Toast.LENGTH_SHORT)
                             .show()
                     },
                     onCreateCollection = { name ->
@@ -219,7 +219,7 @@ fun HomeScreen(
                             showCollectionDialog = false
                             Toast.makeText(
                                 context,
-                                "Created and added to collection",
+                                "Created and added to the \'${name}\' collection",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

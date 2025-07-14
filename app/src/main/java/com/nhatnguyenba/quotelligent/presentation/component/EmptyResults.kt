@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.nhatnguyenba.quotelligent.R
 
 @Composable
-fun EmptyResults() {
+fun EmptyResults(type: SearchFilter) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -31,7 +31,27 @@ fun EmptyResults() {
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text("No quotes found", style = MaterialTheme.typography.titleMedium)
+        when (type) {
+            SearchFilter.QUOTES -> Text(
+                "No quotes found",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            SearchFilter.AUTHORS -> Text(
+                "No authors found",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            SearchFilter.CATEGORIES -> Text(
+                "No categories found",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            SearchFilter.BOOKMARKS -> Text(
+                "No bookmarks found",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
         Text("Try different keywords", color = MaterialTheme.colorScheme.outline)
     }
 }
